@@ -4,7 +4,7 @@
       <div v-if="recommends.length" class="slider-wrapper">
         <slider>
           <div v-for="item in recommends" :key="item.id">
-            <a :href="item.linkUrl">
+            <a :href="item.linkUrl" target="_blank">
               <img :src="item.picUrl">
             </a>
           </div>

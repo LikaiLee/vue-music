@@ -12,6 +12,10 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 
 const env = config.build.env
 
+function resolveApp(relativePath) {
+  return path.resolve(relativePath);
+}
+
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
@@ -54,6 +58,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: config.build.index,
       template: 'index.html',
+      favicon: resolveApp('favicon.ico'),
       inject: true,
       minify: {
         removeComments: true,
@@ -88,13 +93,11 @@ const webpackConfig = merge(baseWebpackConfig, {
       chunks: ['vendor']
     }),
     // copy custom static assets
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, '../static'),
-        to: config.build.assetsSubDirectory,
-        ignore: ['.*']
-      }
-    ])
+    new CopyWebpackPlugin([{
+      from: path.resolve(__dirname, '../static'),
+      to: config.build.assetsSubDirectory,
+      ignore: ['.*']
+    }])
   ]
 })
 

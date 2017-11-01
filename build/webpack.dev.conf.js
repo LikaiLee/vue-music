@@ -1,6 +1,7 @@
 'use strict'
 const utils = require('./utils')
 const webpack = require('webpack')
+const path = require('path')
 const config = require('../config')
 const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
@@ -12,9 +13,15 @@ Object.keys(baseWebpackConfig.entry).forEach(function (name) {
   baseWebpackConfig.entry[name] = ['./build/dev-client'].concat(baseWebpackConfig.entry[name])
 })
 
+function resolveApp(relativePath) {
+  return path.resolve(relativePath);
+}
+
 module.exports = merge(baseWebpackConfig, {
   module: {
-    rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap })
+    rules: utils.styleLoaders({
+      sourceMap: config.dev.cssSourceMap
+    })
   },
   // cheap-module-eval-source-map is faster for development
   devtool: '#cheap-module-eval-source-map',
@@ -29,6 +36,7 @@ module.exports = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
+      favicon: resolveApp('favicon.ico'),
       inject: true
     }),
     new FriendlyErrorsPlugin()
