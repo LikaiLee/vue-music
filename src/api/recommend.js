@@ -1,17 +1,18 @@
 import jsonp from 'common/js/jsonp'
+// import axios from 'axios'
 import {
-  commonParams,
-  options
+  QQMUSIC_PARAMS
 } from './config'
 
-export function getRecommend() {
-  const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
-
-  const data = Object.assign({}, commonParams, {
-    platform: 'h5',
-    uin: 0,
-    needNewCode: 1
+export function getMusic() {
+  const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+  const {
+    PARAMS_DATA,
+    REQ_PARAMS
+  } = QQMUSIC_PARAMS
+  const encodedData = JSON.stringify(PARAMS_DATA)
+  const data = Object.assign({}, REQ_PARAMS, {
+    data: encodedData
   })
-
-  return jsonp(url, data, options)
+  return jsonp(url, data)
 }

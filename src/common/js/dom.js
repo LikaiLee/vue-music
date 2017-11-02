@@ -2,7 +2,7 @@ export function addClass(el, className) {
   if (hasClass(el, className)) {
     return
   }
-  let newClass = el.className.split(' ')
+  let newClass = el.className.trim().split(' ')
   newClass.push(className)
   el.className += newClass.join(' ')
 }

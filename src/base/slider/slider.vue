@@ -16,7 +16,7 @@ export default {
   name: 'slider',
   data() {
     return {
-      dots: [],
+      dots: 0,
       currentPageIndex: 0
     }
   },
@@ -35,15 +35,13 @@ export default {
     }
   },
   mounted() {
-    setTimeout(() => {
-      this._setSliderWidth()
-      this._initDots()
-      this._initSlider()
+    this._setSliderWidth()
+    this._initDots()
+    this._initSlider()
 
-      if (this.autoPlay) {
-        this._play()
-      }
-    }, 20)
+    if (this.autoPlay) {
+      this._play()
+    }
 
     window.addEventListener('resize', () => {
       if (!this.slider) {
@@ -55,14 +53,15 @@ export default {
   },
   methods: {
     _setSliderWidth(isResize) {
-      this.children = this.$refs.sliderGroup.children
-      let width = 0
+      this.sliders = this.$refs.sliderGroup.children
+      let sliderCount = this.sliders.length
       let sliderWidth = this.$refs.slider.clientWidth
-      for (let i = 0; i < this.children.length; i++) {
-        let child = this.children[i]
+      let width = sliderCount * sliderWidth
+
+      for (let i = 0; i < sliderCount; i++) {
+        let child = this.sliders[i]
         addClass(child, 'slider-item')
         child.style.width = sliderWidth + 'px'
-        width += sliderWidth
       }
 
       if (this.loop && !isResize) {
@@ -91,14 +90,13 @@ export default {
         this.currentPageIndex = pageIndex
 
         if (this.autoPlay) {
-          clearTimeout(this.timer)// 拖放时效果
+          clearTimeout(this.timer)// 手动拖放时
           this._play()
         }
       })
     },
     _initDots() {
-      let len = this.children.length
-      this.dots = new Array(len)
+      this.dots = this.sliders.length
     },
     _play() {
       let pageIndex = this.currentPageIndex + 1
@@ -109,6 +107,9 @@ export default {
         this.slider.goToPage(pageIndex, 0, 400)
       }, this.interval)
     }
+  },
+  destroyed() {
+    clearTimeout(this.timer)
   }
 }
 </script>

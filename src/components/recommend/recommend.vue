@@ -1,50 +1,75 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div v-if="recommends.length" class="slider-wrapper">
-        <slider>
-          <div v-for="item in recommends" :key="item.id">
-            <a :href="item.linkUrl" target="_blank">
-              <img :src="item.picUrl">
-            </a>
-          </div>
-        </slider>
+    <scroll ref="scroll" :data="recomPlaylist" class="recommend-content">
+      <div>
+        <div v-if="focus.length" class="slider-wrapper">
+          <slider>
+            <div v-for="item in focus" :key="item.id">
+              <a :href="item.jump_info.url" target="_blank">
+                <img @load="loadImage" :src="item.pic_info.url">
+              </a>
+            </div>
+          </slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li v-for="(item, index) in recomPlaylist" :key="index" class="item">
+              <div class="icon">
+                <img width="60" height="60" :src="item.cover">
+              </div>
+              <div class="text">
+                <h2 class="name">{{ item.title }}</h2>
+                <p class="desc">{{ item.username }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="recommend-list">
-        <h1 class="list-title">热门歌单推荐</h1>
-        <ul></ul>
-      </div>
-    </div>
+    </scroll>
   </div>
 </template>
 
 <script>
+import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
-import { getRecommend } from 'api/recommend'
-import { ERR_OK } from 'api/config'
+import { getMusic } from 'api/recommend'
+import { CODE_OK } from 'api/config'
 
 export default {
   data() {
     return {
-      recommends: []
+      focus: [],
+      recomPlaylist: []
     }
   },
   created() {
-    this._getRecommend()
+    this._fetchData()
   },
   methods: {
-    _getRecommend() {
-      getRecommend().then((res) => {
-        if (res.code === ERR_OK) {
-          this.recommends = res.data.slider
+    _fetchData() {
+      getMusic().then((res) => {
+        if (res.code === CODE_OK) {
+          const { focus, recomPlaylist } = res
+          this.focus = focus.data.content
+          this.recomPlaylist = recomPlaylist.data.v_hot
+          // console.log(this.focus)
+          // console.log(this.recomPlaylist)
         } else {
-          console.log('fail to fetch data from qqmusic')
+          console.log('fail to get focus data')
         }
       })
+    },
+    loadImage() {
+      if (!this.checkLoaded) {
+        this.$refs.scroll.refresh()
+        this.checkLoaded = true
+      }
     }
   },
   components: {
-    Slider
+    Slider,
+    Scroll
   }
 }
 </script>
