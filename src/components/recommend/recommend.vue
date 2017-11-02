@@ -12,7 +12,7 @@
           </slider>
         </div>
         <div class="recommend-list">
-          <h1 class="list-title">热门歌单推荐</h1>
+          <h1 class="list-title" v-show="recomPlaylist.length">热门歌单推荐</h1>
           <ul>
             <li v-for="(item, index) in recomPlaylist" :key="index" class="item">
               <div class="icon">
@@ -26,11 +26,15 @@
           </ul>
         </div>
       </div>
+      <div class="loading-container" v-show="!recomPlaylist.length">
+        <loading></loading>
+      </div>
     </scroll>
   </div>
 </template>
 
 <script>
+import Loading from 'base/loading/loading'
 import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
 import { getMusic } from 'api/recommend'
@@ -69,7 +73,8 @@ export default {
   },
   components: {
     Slider,
-    Scroll
+    Scroll,
+    Loading
   }
 }
 </script>
