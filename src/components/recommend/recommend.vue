@@ -16,7 +16,7 @@
           <ul>
             <li v-for="(item, index) in recomPlaylist" :key="index" class="item">
               <div class="icon">
-                <img width="60" height="60" :src="item.cover">
+                <img width="60" height="60" v-lazy="item.cover">
               </div>
               <div class="text">
                 <h2 class="name">{{ item.title }}</h2>
