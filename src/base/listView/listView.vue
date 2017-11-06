@@ -16,6 +16,9 @@
         <li class="item" v-for="(item, index) in shortcutList" :class="{'current': index === currentIndex}" :data-index="index" :key="index">{{ item }}</li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="fixedTitle" ref="listFixed">
+      <h1 class="fixed-title">{{ fixedTitle }}</h1>
+    </div>
   </scroll>
 </template>
 
@@ -35,7 +38,8 @@ export default {
   data() {
     return {
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      diff: 0
     }
   },
   props: {
@@ -49,6 +53,12 @@ export default {
       return this.data.map((group) => {
         return group.title.substr(0, 1)
       })
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
   methods: {
@@ -120,11 +130,21 @@ export default {
         let height2 = listHeight[i + 1]
         if (!height2 || (-newY >= height1 && -newY < height2)) {
           this.currentIndex = i
+          this.diff = height2 + newY
           return
         }
       }
       // 滚动到底部 && -newY > 最后一个元素的上限
       this.currentIndex = listHeight.length - 2
+    },
+    diff(newVal) {
+      const titleHeight = 30
+      let fixedTop = (newVal > 0 && newVal < titleHeight) ? newVal - titleHeight : 0
+      if (this.fixedTop === fixedTop) {
+        return
+      }
+      this.fixedTop = fixedTop
+      this.$refs.listFixed.style.transfrom = `translate3d(0, ${fixedTop}px, 0)`
     }
   },
   components: {
