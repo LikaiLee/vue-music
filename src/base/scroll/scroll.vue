@@ -42,6 +42,7 @@ export default {
       })
       if (this.listenScroll) {
         let me = this
+        // 暴露内部滚动事件给外部
         this.scroll.on('scroll', (pos) => {
           me.$emit('scroll', pos)
         })

@@ -52,16 +52,20 @@ export default {
     }
   },
   methods: {
+    // 点击右侧字母跳转
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, 'index')
+      // 记录当前位置
       let firstTouch = e.touches[0]
       this.touch.y1 = firstTouch.pageY
       this.touch.anchorIndex = anchorIndex
       this._scrollTo(anchorIndex)
     },
+    // 在字母上拖动时
     onShortcutTouchMove(e) {
       let firstTouch = e.touches[0]
       this.touch.y2 = firstTouch.pageY
+      // 计算滚动距离
       let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
       let anchorIndex = parseInt(this.touch.anchorIndex) + delta
       this._scrollTo(anchorIndex)
@@ -86,11 +90,13 @@ export default {
 
   },
   watch: {
+    // 计算每个项目的高度供滚动时高亮字母使用
     data() {
       setTimeout(() => {
         this._calculateHeight()
       }, 20)
     },
+    // 滚动时高亮右侧字母
     scrollY(newY) {
       // 滚动到顶部
       if (newY > 0) {
