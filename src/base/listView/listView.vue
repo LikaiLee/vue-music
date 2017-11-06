@@ -60,6 +60,7 @@ export default {
       this.touch.y1 = firstTouch.pageY
       this.touch.anchorIndex = anchorIndex
       this._scrollTo(anchorIndex)
+      this.currentIndex = parseInt(anchorIndex)
     },
     // 在字母上拖动时
     onShortcutTouchMove(e) {
