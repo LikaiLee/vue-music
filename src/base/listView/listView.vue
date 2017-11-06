@@ -70,6 +70,7 @@ export default {
       let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
       let anchorIndex = parseInt(this.touch.anchorIndex) + delta
       this._scrollTo(anchorIndex)
+      this.currentIndex = parseInt(anchorIndex)
     },
     scroll(pos) {
       this.scrollY = pos.y
