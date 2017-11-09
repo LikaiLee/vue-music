@@ -2,6 +2,10 @@
 
 > Vue 音乐播放器
 
+> 线上预览地址：
+  手机访问最佳，或使用Chrome的移动端模式
+  http://lilikai.tk/projects/vue-music
+
 ## Build Setup
 
 ``` bash
