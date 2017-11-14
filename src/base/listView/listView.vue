@@ -4,7 +4,7 @@
       <li v-for="(group, index) in data" :key="index" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{ group.title }}</h2>
         <ul>
-          <li v-for="(item, index) in group.items" :key="index" class="list-group-item">
+          <li @click="selectItem(item)" v-for="(item, index) in group.items" :key="index" class="list-group-item">
             <img v-lazy="item.avatar" class="avatar">
             <span class="name">{{ item.name }}</span>
           </li>
@@ -19,12 +19,16 @@
     <div class="list-fixed" v-show="fixedTitle" ref="listFixed">
       <h1 class="fixed-title">{{ fixedTitle }}</h1>
     </div>
+    <div v-if="!data.length" class="loading-container">
+      <loading></loading>
+    </div>
   </scroll>
 </template>
 
 <script>
 import { getData } from 'common/js/dom'
 import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 
 const ANCHOR_HEIGHT = 18
 
@@ -62,6 +66,9 @@ export default {
     }
   },
   methods: {
+    selectItem(item) {
+      this.$emit('select', item)
+    },
     // 点击右侧字母跳转
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, 'index')
@@ -148,7 +155,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   }
 }
 </script>
