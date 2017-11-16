@@ -16,7 +16,7 @@
     <div class="bg-layer" ref="layer"></div>
     <scroll @scroll="scroll" :probe-type="probeType" :listen-scroll="listenScroll" :data="songs" class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
       <div v-if="!songs.length" class="loading-container">
         <loading></loading>
@@ -60,6 +60,9 @@ export default {
     },
     back() {
       this.$router.back()
+    },
+    selectItem(song, index) {
+      console.log(song, index)
     }
   },
   watch: {
@@ -84,7 +87,7 @@ export default {
       if (newY < translateY) {
         zIndex = 10
         this.$refs.bgImage.style.paddingTop = 0
-        this.$refs.bgImage.style.height = RESOVLED_HEIGHT + 'px'
+        this.$refs.bgImage.style.height = `${RESOVLED_HEIGHT}px`
         this.$refs.playBtn.style.display = 'none'
       } else {
         this.$refs.bgImage.style.paddingTop = '70%'
