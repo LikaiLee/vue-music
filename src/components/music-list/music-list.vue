@@ -29,6 +29,7 @@ import Scroll from '@/base/scroll/scroll'
 import SongList from '@/base/song-list/song-list'
 import Loading from '@/base/loading/loading'
 import { prefixStyle } from '@/common/js/dom'
+import { mapActions } from 'vuex'
 
 const RESOVLED_HEIGHT = 40
 const transform = prefixStyle('transform')
@@ -62,8 +63,12 @@ export default {
       this.$router.back()
     },
     selectItem(song, index) {
-      console.log(song, index)
-    }
+      this.selectPlay({ list: this.songs, index })
+      // console.log(song, index)
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   watch: {
     scrollY(newY) {
@@ -135,7 +140,7 @@ export default {
     right: 0
     background: $color-background
     .back
-      position absolute
+      position: absolute
       top: 0
       left: 6px
       z-index: 50
