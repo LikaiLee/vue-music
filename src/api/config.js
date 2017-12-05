@@ -1,3 +1,11 @@
+/**
+ * get 搜索 https://c.y.qq.com/soso/fcgi-bin/client_search_cp?format=json&p=${page}&n=${pageSize}&w=${keyword}&aggr=1&lossless=1&cr=1&new_json=1
+ * get 单曲详情 https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid=${songmid}&format=json&platform=yqq
+ * get 某张专辑详情 https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_info_cp.fcg?albummid=${albummid}&format=jsonp&platform=yqq
+ * get 歌手专辑 https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_album.fcg?format=json&platform=yqq&singermid=${singermid}&order=time&begin=0&num=5&format=json&platform=yqq
+ * get 歌手所有歌曲 https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg?format=json&platform=yqq&singermid=${singermid}&order=listen&begin=0&num=30&songstatus=1
+ * get 歌曲海报 http://y.gtimg.cn/music/photo_new/T002R500x500M000${albummid}.jpg?max_age=2592000
+ */
 export const QQMUSIC_PARAMS = {
   REQ_PARAMS: {
     callback: 'recom8229649584250425',
