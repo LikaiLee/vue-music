@@ -24,7 +24,8 @@
         <div class="bottom">
           <div class="progress-wrapper">
             <span class="time time-l">{{ formatTime(currentTime) }}</span>
-            <div class="progress-bar-wrap">
+            <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent"></progress-bar>
             </div>
             <span class="time time-r">{{ formatTime(currentSong.duration) }}</span>
           </div>
@@ -72,6 +73,7 @@
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/common/js/dom'
+import ProgressBar from '@/base/progress-bar/progress-bar'
 
 const transform = prefixStyle('transform')
 
@@ -158,10 +160,11 @@ export default {
       }
       this.songReady = false
     },
-    ready() {
+    ready(e) {
       this.songReady = true
     },
-    error() {
+    error(e) {
+      alert('err')
       this.songReady = false
     },
     updateTime(e) {
@@ -201,16 +204,41 @@ export default {
   },
   watch: {
     currentSong() {
-      console.log(this.playlist)
-      this.$nextTick(() => {
+      // console.log(this.playlist)
+      /* this.$nextTick(() => {
         this.$refs.audio.play()
-      })
+      }) */
+      setTimeout(() => {
+        // console.log(this.songReady)
+        // this.$nextTick(() => {
+        const audio = this.$refs.audio
+        let promise = audio.play()
+        if (promise !== undefined) {
+          promise.catch(err => {
+            console.log(err)
+            alert(err.message)
+            alert(err.description)
+            // audio.play()
+            // this.$nextTick(() => {
+            audio.pause()
+            audio.currentTime = 0
+            audio.play()
+            // })
+          }).then(_ => {
+          })
+        } else {
+          console.log('promise is not defined')
+        }
+        // })
+      }, 200)
     },
     playing(newPlaying) {
-      const audio = this.$refs.audio
-      this.$nextTick(() => {
-        newPlaying ? audio.play() : audio.pause()
-      })
+      setTimeout(() => {
+        this.$nextTick(() => {
+          const audio = this.$refs.audio
+          newPlaying ? audio.play() : audio.pause()
+        })
+      }, 200)
     }
   },
   computed: {
@@ -224,7 +252,12 @@ export default {
       return this.playing ? 'play' : 'pause'
     },
     disableCls() {
-      return this.songReady ? '' : 'disable'
+      setTimeout(() => {
+        return this.songReady ? '' : 'disable'
+      }, 200)
+    },
+    percent() {
+      return this.currentTime / this.currentSong.duration
     },
     ...mapGetters([
       'fullScreen',
@@ -233,6 +266,9 @@ export default {
       'playing',
       'currentIndex'
     ])
+  },
+  components: {
+    ProgressBar
   }
 
 }
@@ -466,7 +502,7 @@ export default {
         padding: 0 10px
         .icon-play-mini, .icon-pause-mini, .icon-playlist
           font-size: 30px
-          color: $color-theme-d
+          color: rgb(255,205,49)
         .icon-mini
           font-size: 32px
           position: absolute

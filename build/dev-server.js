@@ -23,6 +23,11 @@ const proxyTable = config.dev.proxyTable
 
 const app = express()
 const compiler = webpack(webpackConfig)
+// const apiRoutes = express.Router()
+
+// apiRoutes.get('/getSongUrl', function (req, res) {
+//   res.send('/getSongUrl')
+// })
 
 const devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
@@ -46,12 +51,14 @@ const hotMiddleware = require('webpack-hot-middleware')(compiler, {
 // enable hot-reload and state-preserving
 // compilation error display
 app.use(hotMiddleware)
-
+// app.use('/api', apiRoutes)
 // proxy api requests
 Object.keys(proxyTable).forEach(function (context) {
   let options = proxyTable[context]
   if (typeof options === 'string') {
-    options = { target: options }
+    options = {
+      target: options
+    }
   }
   app.use(proxyMiddleware(options.filter || context, options))
 })
