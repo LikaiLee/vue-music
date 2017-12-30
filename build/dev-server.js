@@ -12,6 +12,7 @@ const express = require('express')
 const webpack = require('webpack')
 const proxyMiddleware = require('http-proxy-middleware')
 const webpackConfig = require('./webpack.dev.conf')
+const axios = require('axios')
 
 // default port where dev server listens for incoming traffic
 const port = process.env.PORT || config.dev.port
@@ -25,8 +26,27 @@ const app = express()
 const compiler = webpack(webpackConfig)
 const apiRoutes = express.Router()
 
-apiRoutes.get('/getSongUrl', function (req, res) {
-  res.send('/getSongUrl')
+apiRoutes.get('/getLyric', function (req, res) {
+  axios({
+    url: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
+    method: 'get',
+    params: req.query,
+    headers: {
+      'referer': 'https://y.qq.com/portal/',
+    }
+  }).then(({
+    data
+  }) => {
+    var ret = data
+    if (typeof ret === 'string') {
+      var reg = /^\w+\(({[^()]+})\)$/
+      var matches = data.match(reg)
+      if (matches) {
+        ret = JSON.parse(matches[1])
+      }
+    }
+    res.json(ret)
+  })
 })
 
 const devMiddleware = require('webpack-dev-middleware')(compiler, {

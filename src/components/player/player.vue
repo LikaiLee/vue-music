@@ -274,6 +274,7 @@ export default {
         } else {
           console.log('promise is not defined')
         }
+        this.currentSong.getLyric()
         // })
       }, 200)
     },

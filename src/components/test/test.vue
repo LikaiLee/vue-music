@@ -4,10 +4,10 @@
   </div>
 </template>
 <script>
-// import {getSong} from '@/api/song'
+import { getLyric } from '@/api/song'
 export default {
   created() {
-    // getSong()
+    getLyric('003OUlho2HcRHC')
   }
 }
 </script>

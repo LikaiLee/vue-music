@@ -1,3 +1,14 @@
+import {
+  Base64
+} from 'js-base64'
+import {
+  getLyric
+} from '@/api/song'
+
+import {
+  CODE_OK
+} from '@/api/config'
+
 export default class Song {
   constructor({
     id,
@@ -17,6 +28,15 @@ export default class Song {
     this.duration = duration
     this.image = image
     this.url = url
+  }
+
+  getLyric() {
+    getLyric(this.mid).then((res) => {
+      if (CODE_OK === res.retcode) {
+        this.lyric = Base64.decode(res.lyric)
+        console.log(this.lyric)
+      }
+    })
   }
 }
 

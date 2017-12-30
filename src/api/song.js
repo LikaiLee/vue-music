@@ -1,22 +1,23 @@
 import axios from 'axios'
 
-// const cookie = 'pgv_pvi=5752845312; pgv_si=s4582255616; ts_refer=ADTAGh5_playsong; ts_last=y.qq.com/portal/player.html; ts_uid=8996513470; yqq_stat=0'
-export function getSong() {
-  /* const guid = new Date().getTime() % 10000 + ~~(Math.random() * 1000000000)
-  const {
-    data
-  } = await axios.get('https://c.y.qq.com/base/fcgi-bin/fcg_musicexpress.fcg', {
+export function getLyric(songmid) {
+  return axios.get('/api/getLyric', {
     params: {
-      json: 3,
-      format: 'json',
-      guid
-    },
-    headers: {
-      cookie
+      callback: 'MusicJsonCallback_lrc',
+      pcachetime: new Date().getTime(),
+      songmid: songmid,
+      g_tk: 5381,
+      jsonpCallback: 'MusicJsonCallback_lrc',
+      loginUin: 0,
+      hostUin: 0,
+      format: 'jsonp',
+      inCharset: 'utf8',
+      outCharset: 'utf-8',
+      notice: 0,
+      platform: 'yqq',
+      needNewCode: 0
     }
-  })
-  console.log(data) */
-  axios.get('/api/getSongUrl').then((res) => {
-    console.log(res)
+  }).then(res => {
+    return Promise.resolve(res.data)
   })
 }
