@@ -31,11 +31,18 @@ export default class Song {
   }
 
   getLyric() {
-    getLyric(this.mid).then((res) => {
-      if (CODE_OK === res.retcode) {
-        this.lyric = Base64.decode(res.lyric)
-        console.log(this.lyric)
-      }
+    if (this.lyric) {
+      return Promise.resolve(this.lyric)
+    }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then((res) => {
+        if (CODE_OK === res.retcode) {
+          this.lyric = Base64.decode(res.lyric)
+          resolve(this.lyric)
+        } else {
+          reject(new Error('fail to get lyric'))
+        }
+      })
     })
   }
 }

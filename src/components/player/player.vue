@@ -74,6 +74,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
+import Lyric from 'lyric-parser'
 import { prefixStyle } from '@/common/js/dom'
 import ProgressBar from '@/base/progress-bar/progress-bar'
 import ProgressCircle from '@/base/progress-circle/progress-circle'
@@ -86,7 +87,8 @@ export default {
   data() {
     return {
       songReady: false, // fix快速点击 DOM异常
-      currentTime: 0
+      currentTime: 0,
+      currentLyric: null
     }
   },
   methods: {
@@ -216,6 +218,12 @@ export default {
 
       this.setCurrentIndex(index)
     },
+    getLyric() {
+      this.currentSong.getLyric().then(lyric => {
+        this.currentLyric = new Lyric(lyric)
+        console.log(this.currentLyric)
+      })
+    },
     _pad(num, n = 2) {
       let len = num.toString().length
       while (len < n) {
@@ -274,7 +282,7 @@ export default {
         } else {
           console.log('promise is not defined')
         }
-        this.currentSong.getLyric()
+        this.getLyric()
         // })
       }, 200)
     },
