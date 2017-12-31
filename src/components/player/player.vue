@@ -157,13 +157,22 @@ export default {
       this.$refs.cdWrapper.style[transform] = ''
     },
     togglePlaying() {
+      if (!this.songReady) {
+        return
+      }
       this.setPlayingState(!this.playing)
+      if (this.currentLyric) {
+        this.currentLyric.togglePlay()
+      }
     },
     end() {
       if (this.mode === playMode.loop) {
         const audio = this.$refs.audio
         audio.currentTime = 0
         audio.play()
+        if (this.currentLyric) {
+          this.currentLyric.seek()
+        }
       } else {
         this.playNext()
       }
@@ -213,9 +222,13 @@ export default {
       return `${minute}:${second}`
     },
     onProgressBarChange(percent) {
-      this.$refs.audio.currentTime = percent * this.currentSong.duration
+      const currentTime = percent * this.currentSong.duration
+      this.$refs.audio.currentTime = currentTime
       if (!this.playing) {
         this.togglePlaying()
+      }
+      if (this.currentLyric) {
+        this.currentLyric.seek(currentTime * 1000)
       }
     },
     changeMode() {
@@ -244,7 +257,6 @@ export default {
         if (this.playing) {
           this.currentLyric.play()
         }
-        console.log(this.currentLyric)
       })
     },
     handleLyric({ lineNum, txt }) {
@@ -343,6 +355,9 @@ export default {
     currentSong(newSong, oldSong) {
       if (newSong.id === oldSong.id) {
         return
+      }
+      if (this.currentLyric) {
+        this.currentLyric.stop()
       }
       // console.log(this.playlist)
       /* this.$nextTick(() => {
