@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export function getLyric(songmid) {
-  return axios.get('/api/getLyric', {
+  return axios.get('http://120.24.250.209:3000/qqMusic/getLyricByMid', {
     params: {
       callback: 'MusicJsonCallback_lrc',
       pcachetime: new Date().getTime(),
