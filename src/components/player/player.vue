@@ -19,6 +19,9 @@
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
@@ -77,11 +80,12 @@
           </progress-circle>
         </div>
         <div class="control">
-          <i class="icon-playlist"></i>
+          <i class="icon-playlist" @click.stop="toggleShowPlayList"></i>
         </div>
       </div>
     </transition>
     <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
+    <play-list :show="isShowPlayList"></play-list>
   </div>
 </template>
 <script>
@@ -94,6 +98,7 @@ import ProgressCircle from '@/base/progress-circle/progress-circle'
 import { playMode } from '@/common/js/config'
 import { shuffle } from '@/common/js/util'
 import Scroll from '@/base/scroll/scroll'
+import PlayList from '@/components/play-list/play-list'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
@@ -105,7 +110,9 @@ export default {
       currentTime: 0,
       currentLyric: null,
       currentLineNum: 0,
-      currentShow: 'cd'
+      currentShow: 'cd',
+      playingLyric: '',
+      isShowPlayList: false
     }
   },
   created() {
@@ -116,6 +123,7 @@ export default {
       this.setFullScreen(false)
     },
     open() {
+      this.isShowPlayList = false
       this.setFullScreen(true)
     },
     enter(el, done) {
@@ -167,27 +175,33 @@ export default {
     },
     end() {
       if (this.mode === playMode.loop) {
-        const audio = this.$refs.audio
-        audio.currentTime = 0
-        audio.play()
-        if (this.currentLyric) {
-          this.currentLyric.seek()
-        }
+        this.loop()
       } else {
         this.playNext()
+      }
+    },
+    loop() {
+      const audio = this.$refs.audio
+      audio.currentTime = 0
+      audio.play()
+      if (this.currentLyric) {
+        this.currentLyric.seek()
       }
     },
     playPrev() {
       if (!this.songReady) {
         return
-      }
-      let index = this.currentIndex - 1
-      if (index === -1) {
-        index = this.playlist.length - 1
-      }
-      this.setCurrentIndex(index)
-      if (!this.playing) {
-        this.togglePlaying()
+      } if (this.playlist.length === 1) {
+        this.loop()
+      } else {
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playlist.length - 1
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
       }
       this.songReady = false
     },
@@ -195,13 +209,17 @@ export default {
       if (!this.songReady) {
         return
       }
-      let index = this.currentIndex + 1
-      if (index === this.playlist.length) {
-        index = 0
-      }
-      this.setCurrentIndex(index)
-      if (!this.playing) {
-        this.togglePlaying()
+      if (this.playlist.length === 1) {
+        this.loop()
+      } else {
+        let index = this.currentIndex + 1
+        if (index === this.playlist.length) {
+          index = 0
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
       }
       this.songReady = false
     },
@@ -257,6 +275,10 @@ export default {
         if (this.playing) {
           this.currentLyric.play()
         }
+      }).catch(() => {
+        this.currentLyric = null
+        this.playingLyric = ''
+        this.currentLineNum = 0
       })
     },
     handleLyric({ lineNum, txt }) {
@@ -267,12 +289,13 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      this.playingLyric = txt
     },
     middleTouchStart(e) {
       this.touch.initialed = true
       const touch = e.touches[0]
       this.touch.startX = touch.pageX
-      this.startY = touch.pageY
+      this.touch.startY = touch.pageY
     },
     middleTouchMove(e) {
       if (!this.touch.initialed) return
@@ -280,6 +303,9 @@ export default {
       const deltaX = touch.pageX - this.touch.startX
       const deltaY = touch.pageY - this.touch.startY
       if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        if (Math.abs(deltaY) > 20 && this.currentShow === 'cd') {
+          this.setFullScreen(false)
+        }
         return
       }
 
@@ -334,7 +360,6 @@ export default {
     _getPosAndScale() {
       const targetWidth = 40
       const paddingLeft = 40
-      // const paddingBottom = 30
       const paddingTop = 80
       const width = window.innerWidth * 0.8
       const scale = targetWidth / width
@@ -342,6 +367,10 @@ export default {
       const y = window.innerHeight - paddingTop - width / 2 - paddingTop
 
       return { x, y, scale }
+    },
+    toggleShowPlayList() {
+      this.isShowPlayList = !this.isShowPlayList
+      // console.log('toggleShowPlayList')
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
@@ -359,34 +388,22 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.stop()
       }
-      // console.log(this.playlist)
-      /* this.$nextTick(() => {
-        this.$refs.audio.play()
-      }) */
       setTimeout(() => {
-        // console.log(this.songReady)
-        // this.$nextTick(() => {
         const audio = this.$refs.audio
         let promise = audio.play()
-        if (promise !== undefined) {
+        if (promise) {
           promise.catch(err => {
-            console.log(err)
-            alert(err.message)
-            alert(err.description)
-            // audio.play()
-            // this.$nextTick(() => {
+            console.error(err.message)
             audio.pause()
             audio.currentTime = 0
             audio.play()
-            // })
           }).then(_ => {
           })
         } else {
-          console.log('promise is not defined')
+          console.log('---- audio promise is undefined----')
         }
         this.getLyric()
-        // })
-      }, 200)
+      }, 1000)
     },
     playing(newPlaying) {
       setTimeout(() => {
@@ -435,7 +452,8 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    PlayList
   }
 
 }
